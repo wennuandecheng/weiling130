@@ -46,6 +46,176 @@
              border-radius: 4px;
              font-size: 14px;
          }
+         #query-btn {
+             padding: 6px 16px;
+             background-color: #0d6efd;
+             color: white;
+             border: none;
+             border-radius: 4px;
+             font-size: 14px;
+             cursor: pointer;
+         }
+         #query-btn:hover {
+             background-color: #0b5ed7;
+         }
+         .timetable {
+             width: 100%;
+             border-collapse: collapse;
+         }
+         .timetable th, .timetable td {
+             border: 1px solid #dee2e6;
+             padding: 12px;
+             text-align: left;
+         }
+         .timetable th {
+             background-color: #343a40;
+             color: white;
+             font-weight: normal;
+         }
+         .course-item {
+             background-color: #e7f1ff;
+             border-radius: 4px;
+             padding: 6px;
+             margin: 4px 0;
+             color: #0d6efd;
+             font-size: 13px;
+         }
+         .course-time {
+             font-size: 12px;
+             color: #2c3e50;
+             margin-top: 4px;
+             font-weight: 500;
+         }
+         .course-place {
+             font-size: 12px;
+             color: #d63384;
+             margin-top: 4px;
+             font-weight: 500;
+         }
+         .course-detail {
+             font-size: 12px;
+             color: #6c757d;
+             margin-top: 2px;
+         }
+         .no-course {
+             color: #adb5bd;
+             font-style: italic;
+             text-align: center;
+             height: 80px;
+             line-height: 80px;
+         }
+         .section-text {
+             font-weight: 500;
+             color: #2c3e50;
+         }
+     </style>
+ </head>
+ <body>
+     <div class="container">
+         <h1>魏玲的课表查询（2025-2026学年第1学期）</h1>
+         
+         <div class="filter-section">
+             <div class="filter-item">
+                 <label for="week-day">选择周几：</label>
+                 <select id="week-day">
+                     <option value="1" selected>周一</option>
+                     <option value="2">周二</option>
+                     <option value="3">周三</option>
+                     <option value="4">周四</option>
+                     <option value="5">周五</option>
+                     <option value="6">周六</option>
+                     <option value="7">周日</option>
+                 </select>
+             </div>
+             <div class="filter-item">
+                 <label for="week-number">选择周数：</label>
+                 <select id="week-number">
+                     <option value="all" selected>全部周数</option>
+                     <option value="1">第1周</option>
+                     <option value="2">第2周</option>
+                     <option value="3">第3周</option>
+                     <option value="4">第4周</option>
+                     <option value="5">第5周</option>
+                     <option value="6">第6周</option>
+                     <option value="7">第7周</option>
+                     <option value="8">第8周</option>
+                     <option value="9">第9周</option>
+                     <option value="10">第10周</option>
+                     <option value="11">第11周</option>
+                     <option value="12">第12周</option>
+                     <option value="13">第13周</option>
+                     <option value="14">第14周</option>
+                     <option value="15">第15周</option>
+                     <option value="16">第16周</option>
+                     <option value="17">第17周</option>
+                     <option value="18">第18周</option>
+                 </select>
+             </div>
+             <div class="filter-item">
+                 <button id="query-btn">查询课表</button>
+             </div>
+         </div>
+         
+         <table class="timetable">
+             <thead>
+                 <tr>
+                     <<th>节次</</th>
+                     <<th>课程信息</</th>
+                     <<th>上课地点</</th>
+                 </tr>
+             </thead>
+             <tbody id="timetable-content">
+                 <tr>
+                     <td colspan="3" class="no-course">请选择周几、周数后，点击「查询课表」按钮生成</td>
+                 </tr>
+             </tbody>
+         </table>
+     </div>
+     <script>
+         const timetableData = {
+             1: [ 
+                 { 
+                     section: "1-2", 
+                     time: "8:00-9:40（1节8:00-8:50/2节8:55-9:40，含课间）", 
+                     course: "中国烹饪概论★", 
+                     place: "示范教室（东区食堂3楼）",
+                     detail: "教师:宫润华,罗进玲,王建勇,杨铭铎，教学班:(2025-2026-1)-24531072002-02(25级烹饪2班(本))，考核方式:考试，学分:2.0",
+                     weeks: [1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17]
+                 },
+                 { 
+                     section: "3-4", 
+                     time: "10:00-11:40（3节10:00-10:50/4节10:55-11:40，含课间）", 
+                     course: "管理学原理★", 
+                     place: "旅行服务实训室Ⅱ（创业公共实训基地6楼）",
+                     detail: "教师:杨钶淇，教学班:(2025-2026-1)-24531072003-02(25级烹饪2班(本))，考核方式:考试，学分:2.0",
+                     weeks: [1]
+                 },
+                 { 
+                     section: "3-4", 
+                     time: "10:00-11:40（3节10:00-10:50/4节10:55-11:40，含课间）", 
+                     course: "大学体育Ⅰ●", 
+                     place: "西区篮球场(三)",
+                     detail: "教师:刘申，教学班:(2025-2026-1)-24507010001-19(25级烹饪2班(本))，考核方式:考试，学分:1.0",
+                     weeks: [5]
+                 },
+                 { 
+                     section: "6-7", 
+                     time: "14:30-16:10（6节14:30-15:20/7节15:25-16:10，含课间）", 
+                     course: "思想道德与法治★", 
+                     place: "明德楼307",
+                     detail: "教师:曾杨，教学班:(2025-2026-1)-24511010001-31(25级烹饪2班(本);25级体育2班(本))，考核方式:考试，学分:3.0",
+            }
+         .filter-item {
+             display: flex;
+             align-items: center;
+             gap: 8px;
+         }
+         select {
+             padding: 6px 10px;
+             border: 1px solid #ced4da;
+             border-radius: 4px;
+             font-size: 14px;
+         }
          /* 查询按钮样式 */
          #query-btn {
              padding: 6px 16px;

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+ <html lang="zh-CN">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>魏玲的课表查询（完整时间段版）</title>
+     <style>
+         * {
+             margin: 0;
+             padding: 0;
+             box-sizing: border-box;
+             font-family: "Microsoft YaHei", sans-serif;
+         }
+         body {
+             background-color: #f8f9fa;
+             padding: 20px;
+         }
+         .container {
+             max-width: 1000px;
+             margin: 0 auto;
+             background: white;
+             border-radius: 8px;
+             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+             padding: 25px;
+         }
+         h1 {
+             text-align: center;
+             color: #2c3e50;
+             margin-bottom: 25px;
+         }
+         .filter-section {
+             display: flex;
+             flex-wrap: wrap;
+             gap: 15px;
+             margin-bottom: 20px;
+             align-items: center;
+         }
+         .filter-item {
+             display: flex;
+             align-items: center;
+             gap: 8px;
+         }
+         select {
+             padding: 6px 10px;
+             border: 1px solid #ced4da;
+             border-radius: 4px;
+             font-size: 14px;
+         }
+         /* 查询按钮样式 */
+         #query-btn {
+             padding: 6px 16px;
+             background-color: #0d6efd;
+             color: white;
+             border: none;
+             border-radius: 4px;
+             font-size: 14px;
+             cursor: pointer;
+         }
+         #query-btn:hover {
+             background-color: #0b5ed7;
+         }
+         .timetable {
+             width: 100%;
+             border-collapse: collapse;
+         }
+         .timetable th, .timetable td {
+             border: 1px solid #dee2e6;
+             padding: 12px;
+             text-align: left;
+         }
+         .timetable th {
+             background-color: #343a40;
+             color: white;
+             font-weight: normal;
+         }
+         .course-item {
+             background-color: #e7f1ff;
+             border-radius: 4px;
+             padding: 6px;
+             margin: 4px 0;
+             color: #0d6efd;
+             font-size: 13px;
+         }
+         .course-time {
+             font-size: 12px;
+             color: #2c3e50;
+             margin-top: 4px;
+             font-weight: 500;
+         }
+         .course-place {
+             font-size: 12px;
+             color: #d63384;
+             margin-top: 4px;
+             font-weight: 500;
+         }
+         .course-detail {
+             font-size: 12px;
+             color: #6c757d;
+             margin-top: 2px;
+         }
+         .no-course {
+             color: #adb5bd;
+             font-style: italic;
+             text-align: center;
+             height: 80px;
+             line-height: 80px;
+         }
+         .section-text {
+             font-weight: 500;
+             color: #2c3e50;
+         }
+     </style>
+ </head>
+ <body>
+     <div class="container">
+         <h1>魏玲的课表查询（2025-2026学年第1学期）</h1>
+         
+         <!-- 筛选区域：新增查询按钮 -->
+         <div class="filter-section">
+             <div class="filter-item">
+                 <label for="week-day">选择周几：</label>
+                 <select id="week-day">
+                     <option value="1" selected>周一</option>
+                     <option value="2">周二</option>
+                     <option value="3">周三</option>
+                     <option value="4">周四</option>
+                     <option value="5">周五</option>
+                     <option value="6">周六</option>
+                     <option value="7">周日</option>
+                 </select>
+             </div>
+             <div class="filter-item">
+                 <label for="week-number">选择周数：</label>
+                 <select id="week-number">
+                     <option value="all" selected>全部周数</option>
+                     <option value="1">第1周</option>
+                     <option value="2">第2周</option>
+                     <option value="3">第3周</option>
+                     <option value="4">第4周</option>
+                     <option value="5">第5周</option>
+                     <option value="6">第6周</option>
+                     <option value="7">第7周</option>
+                     <option value="8">第8周</option>
+                     <option value="9">第9周</option>
+                     <option value="10">第10周</option>
+                     <option value="11">第11周</option>
+                     <option value="12">第12周</option>
+                     <option value="13">第13周</option>
+                     <option value="14">第14周</option>
+                     <option value="15">第15周</option>
+                     <option value="16">第16周</option>
+                     <option value="17">第17周</option>
+                     <option value="18">第18周</option>
+                 </select>
+             </div>
+             <!-- 新增查询按钮：点击后触发课表生成 -->
+             <div class="filter-item">
+                 <button id="query-btn">查询课表</button>
+             </div>
+         </div>
+         
+         <!-- 课表表格：修复表头标签错误 -->
+         <table class="timetable">
+             <thead>
+                 <tr>
+                     <<th>节次</</th>
+                     <<th>课程信息</</th>
+                     <<th>上课地点</</th>
+                 </tr>
+             </thead>
+             <tbody id="timetable-content">
+                 <!-- 初始状态显示提示 -->
+                 <tr>
+                     <td colspan="3" class="no-course">请选择周几、周数后，点击「查询课表」按钮生成</td>
+                 </tr>
+             </tbody>
+         </table>
+     </div>
+     <script>
+         // 1. 课表完整数据（1-7节精准时间段）
+         const timetableData = {
+             1: [ // 周一
+                 { 
+                     section: "1", 
+                     time: "7:40-9:00", 
+                     course: "中国烹饪概论★", 
+                     place: "示范教室（东区食堂3楼）",
+                     detail: "教师:宫润，教学班:王建涛-杨济铭，考核方式:考试，学分:2.0",
+                     weeks: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+                 },
+                 { 
+                     section: "3-4", 
+                     time: "10:40-15:20（3节10:40-12:00/4节14:00-15:20，含课间）", 
+                     course: "[调]管理学原理★", 
+                     place: "旅行服务实训室II（创业公共实训基地6楼）",
+                     detail: "教师:白静静，教学班组成:25级烹饪2班，学分:2.0",
+                     weeks: [1,2,3,4,5]
+                 },
+                 { 
+                     section: "3-4", 
+                     time: "10:40-15:20（3节10:40-12:00/4节14:00-15:20，含课间）", 
+                     course: "[调]管理学原理★", 
+                     place: "旅行服务实训室II（创业公共实训基地6楼）",
+                     detail: "教师:杨钒淇，教学班组成:25级烹饪2班，学分:2.0",
+                     weeks: [7,8,9,10,11,12]
+                 },
+                 { 
+                     section: "3-4", 
+                     time: "10:40-15:20（3节10:40-12:00/4节14:00-15:20，含课间）", 
+                     course: "[调]管理学原理★", 
+                     place: "示范教室（东区食堂3楼）",
+                     detail: "教师:杨钒淇，教学班组成:25级烹饪班(本)，学分:2.0",
+                     weeks: [6]
+                 }
+             ]
+             // 可补充其他周次的课表数据
+         };
+
+         // 2. 查询按钮点击事件
+         document.getElementById('query-btn').addEventListener('click', function() {
+             const weekDay = document.getElementById('week-day').value;
+             const weekNumber = document.getElementById('week-number').value;
+             const timetableContent = document.getElementById('timetable-content');
+             
+             // 清空原有内容
+             timetableContent.innerHTML = '';
+             
+             // 获取对应周次的课程数据
+             const dayCourses = timetableData[weekDay] || [];
+             if (dayCourses.length === 0) {
+                 timetableContent.innerHTML = `<tr><td colspan="3" class="no-course">该日暂无课程安排</td></tr>`;
+                 return;
+             }
+             
+             // 按节次分组
+             const sectionGroups = {};
+             dayCourses.forEach(course => {
+                 // 筛选周数
+                 if (weekNumber !== 'all' && !course.weeks.includes(Number(weekNumber))) {
+                     return;
+                 }
+                 if (!sectionGroups[course.section]) {
+                     sectionGroups[course.section] = [];
+                 }
+                 sectionGroups[course.section].push(course);
+             });
+             
+             // 生成表格内容
+             if (Object.keys(sectionGroups).length === 0) {
+                 timetableContent.innerHTML = `<tr><td colspan="3" class="no-course">该周该日暂无课程安排</td></tr>`;
+                 return;
+             }
+             
+             Object.keys(sectionGroups).forEach(section => {
+                 const courses = sectionGroups[section];
+                 const row = document.createElement('tr');
+                 
+                 // 节次单元格（包含节次+下方的时间）
+                 const sectionTd = document.createElement('td');
+                 sectionTd.innerHTML = `
+                     <div class="section-text">${section}节</div>
+                     <div class="course-time">${courses[0].time}</div>
+                 `;
+                 
+                 // 课程信息单元格
+                 const courseTd = document.createElement('td');
+                 courses.forEach(course => {
+                     courseTd.innerHTML += `
+                         <div class="course-item">${course.course}</div>
+                         <div class="course-detail">${course.detail}</div>
+                     `;
+                 });
+                 
+                 // 上课地点单元格
+                 const placeTd = document.createElement('td');
+                 courses.forEach(course => {
+                     placeTd.innerHTML += `<div class="course-place">${course.place}</div><br>`;
+                 });
+                 
+                 row.appendChild(sectionTd);
+                 row.appendChild(courseTd);
+                 row.appendChild(placeTd);
+                 timetableContent.appendChild(row);
+             });
+         });
+     </script>
+ </body>
+ </html>
